@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Profile | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../../student/css/student-dashboard.css">
+    <link rel="stylesheet" href="../../HOD/css/hod-dashboard.css">
+    <style>
+        .page-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #fb9e3f 0%, #f97316 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-section h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search..."></div>
+                <div class="top-actions"><button class="icon-btn"><i class="fas fa-bell"></i></button></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content fade-in">
+                <div class="welcome-section">
+                    <h1>My Profile</h1>
+                    <p>Manage your personal and contact details.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card"
+                        style="grid-column: span 3; padding: 40px; display: flex; align-items: center; gap: 30px;">
+                        <i class="fas fa-user-circle" style="font-size: 80px; color: #f97316;"></i>
+                        <div>
+                            <h3 id="profileName" style="color: #333; font-size: 24px; margin-bottom: 10px;">Loading...
+                            </h3>
+                            <p id="profileEmail" style="color: #666; font-size: 16px;">Loading...</p>
+                            <span
+                                style="display: inline-block; background: rgba(249, 115, 22, 0.1); color: #f97316; padding: 5px 15px; border-radius: 20px; font-weight: 600; margin-top: 15px;">Teacher</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check Session
+        const session = JSON.parse(localStorage.getItem('eduportal_session')) || JSON.parse(localStorage.getItem('currentUser'));
+        if (!session || session.role !== 'teacher') window.location.href = '../../login2.html';
+
+        document.getElementById('profileName').innerText = session.name || "Teacher Profile";
+        document.getElementById('profileEmail').innerText = session.email || "No Email Found";
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(res => res.text())
+            .then(data => {
+                const doc = new DOMParser().parseFromString(data, 'text/html');
+                const container = document.querySelector('.dashboard-container');
+                container.prepend(doc.getElementById('sidebar'));
+                container.prepend(doc.getElementById('sidebarOverlay'));
+                const script = document.createElement('script');
+                script.textContent = doc.querySelector('script').textContent;
+                document.body.appendChild(script);
+            });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar')?.classList.toggle('active');
+            document.getElementById('sidebarOverlay')?.classList.toggle('active');
+        }
+    </script>
+</body>
+
+</html>

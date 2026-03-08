@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../css/student-dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar will be injected here by JavaScript -->
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+
+                <div class="top-actions">
+                    <button class="icon-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="icon-btn">
+                        <i class="fas fa-globe"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content fade-in">
+                <h1 style="margin-bottom: 12px;">Dashboard</h1>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Assignments</h3>
+                            <p>4 Pending</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Next Class</h3>
+                            <p>10:30 AM</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Subjects</h3>
+                            <p id="totalSubjects">5</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Attendance</h3>
+                            <p id="attendancePercent">85%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subjects -->
+                <h2>Your Subjects</h2>
+                <div class="subjects-grid" id="subjectsGrid">
+                    <!-- Subjects will be populated here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load user data
+        // Check for 'eduportal_session' (from site.js) or fallback to 'currentUser'
+        const session = JSON.parse(localStorage.getItem('eduportal_session'));
+        const user = session || JSON.parse(localStorage.getItem('currentUser'));
+
+        if (!user) {
+            window.location.href = '../../login2.html';
+        }
+
+        // Note: userName and userType are now handled by the sidebar script
+
+        // Load subjects from JSON server
+        const subjectsGrid = document.getElementById('subjectsGrid');
+
+        async function fetchSubjects() {
+            try {
+                // Static Mock Data
+                const subjects = [
+                    { id: 1, name: "Advanced Mathematics", code: "MAT301", teacherId: 2, credits: 4 },
+                    { id: 2, name: "Physics", code: "PHY201", teacherId: 2, credits: 3 },
+                    { id: 3, name: "Computer Science", code: "CS101", teacherId: 4, credits: 4 }
+                ];
+
+                const progressData = [
+                    { id: 1, subjectId: 1, completed: true, studentId: 1 },
+                    { id: 2, subjectId: 2, completed: false, studentId: 1 }
+                ];
+
+                document.getElementById('totalSubjects').innerText = subjects.length;
+
+                subjects.forEach(subject => {
+                    // Match progress or default to 0
+                    const prog = progressData.find(p => p.subjectId === subject.id);
+                    const progressPercent = prog && prog.completed ? 100 : Math.floor(Math.random() * 40 + 60);
+
+                    const div = document.createElement('div');
+                    div.className = 'subject-card';
+                    div.innerHTML = `
+                        <div class="subject-header">
+                            <div class="subject-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <span>SUB${subject.id}</span>
+                        </div>
+                        <h3>${subject.name}</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <p>${progressPercent}% attendance / progress</p>
+                        <button class="btn-primary">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                    `;
+                    subjectsGrid.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Error loading subjects:", error);
+                subjectsGrid.innerHTML = '<p style="color:red; grid-column: span 3;">Failed to load subjects. Please ensure json-server is running on port 3000.</p>';
+            }
+        }
+
+        fetchSubjects();
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load sidebar');
+                return response.text();
+            })
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                // Extract elements
+                const sidebar = doc.getElementById('sidebar');
+                const overlay = doc.getElementById('sidebarOverlay');
+                const scriptContent = doc.querySelector('script').textContent;
+
+                // Inject into page
+                const container = document.querySelector('.dashboard-container');
+                if (sidebar && overlay) {
+                    // Remove existing sidebar/overlay if any to prevent duplicates
+                    const existingSidebar = document.getElementById('sidebar');
+                    const existingOverlay = document.getElementById('sidebarOverlay');
+                    if (existingSidebar) existingSidebar.remove();
+                    if (existingOverlay) existingOverlay.remove();
+
+                    container.prepend(sidebar);
+                    container.prepend(overlay);
+
+                    // Execute the sidebar's script
+                    const script = document.createElement('script');
+                    script.textContent = scriptContent;
+                    document.body.appendChild(script);
+                }
+            })
+            .catch(err => {
+                console.error('Error loading sidebar:', err);
+                if (window.location.protocol === 'file:') {
+                    alert('Sidebar cannot load due to browser security (CORS). Please use a local server (e.g., Live Server in VS Code).');
+                }
+            });
+
+        // Fallback toggle function to ensure button works even if sidebar loads slowly or fails
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            } else {
+                console.log("Sidebar not loaded yet");
+            }
+        }
+    </script>
+</body>
+
+</html>

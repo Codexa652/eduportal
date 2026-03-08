@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Answers | StudySpace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/student-dashboard.css">
+    <link rel="stylesheet" href="../css/essay.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar will be injected here by JavaScript -->
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="nav-wrapper">
+                    <div class="menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <a href="../../html/study.html" class="icon-btn back-btn" title="Back to Study Hub">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                </div>
+                <h2 class="page-title">Essay Review</h2>
+                <div class="top-actions">
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                </div>
+            </div>
+
+            <div class="content fade-in">
+                <header class="arena-header">
+                    <h2>Detailed Explanations</h2>
+                    <p>Click on a question to expand and read the full essay answer.</p>
+                </header>
+
+                <div id="loading" class="loading-spinner">Loading essays...</div>
+                <div class="accordion-container" id="accordionContainer">
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/essay.js"></script>
+    <script src="../js/studyhub-loader.js"></script>
+</body>
+</html>

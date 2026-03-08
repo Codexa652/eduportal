@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance System</title>
+    <style>
+        * {
+            margin: 0
+;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .splash-screen {
+            text-align: center;
+            color: white;
+            animation: fadeIn 1s ease;
+        }
+        
+        .logo-animation i {
+            font-size: 4rem;
+            margin: 0 15px;
+            animation: bounce 2s infinite;
+            display: inline-block;
+        }
+        
+        .logo-animation i:nth-child(1) { animation-delay: 0s; }
+        .logo-animation i:nth-child(2) { animation-delay: 0.3s; }
+        .logo-animation i:nth-child(3) { animation-delay: 0.6s; }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            margin: 30px auto;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen">
+        <div class="logo-animation">
+            <i class="fas fa-calculator"></i>
+            <i class="fas fa-user-graduate"></i>
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1>Attendance System</h1>
+        <p>Smart Attendance Tracking</p>
+        <div class="loader"></div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script>
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 3000);
+    </script>
+</body>
+</html>

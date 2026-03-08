@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Link to the shared CSS file -->
+    <link rel="stylesheet" href="student/css/student-dashboard.css">
+</head>
+
+<body>
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Drawer -->
+    <aside class="sidebar-drawer" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                EduPortal <span id="roleBadge">Student</span>
+            </div>
+            <button class="close-sidebar-btn" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="user-avatar" id="userAvatar">
+                <i class="fas" id="userIcon"></i>
+            </div>
+            <h3 id="userName">Loading...</h3>
+            <p id="userType">...</p>
+        </div>
+
+        <nav class="sidebar-nav" id="sidebarNav">
+            <!-- Links will be injected by JavaScript -->
+        </nav>
+    </aside>
+
+    <script>
+        (function () {
+            // Helper to determine path to root (finlapp/) based on current location
+            function getRootPath() {
+                const path = window.location.pathname.toLowerCase();
+                // Check for depth 3 (e.g. student/studyhub/html/)
+                if (path.includes('/student/studyhub/html/')) return '../../../';
+                // Check for depth 2 (e.g. student/html/)
+                if (path.includes('/student/html/') || path.includes('/teachers/html/') || path.includes('/hod/html/')) return '../../';
+                // Default (e.g. root)
+                return '';
+            }
+
+            const rootPath = getRootPath();
+
+            window.toggleSidebar = function () {
+                document.getElementById('sidebar').classList.toggle('active');
+                document.getElementById('sidebarOverlay').classList.toggle('active');
+            }
+
+            const session = JSON.parse(localStorage.getItem('eduportal_session'));
+            const user = session || JSON.parse(localStorage.getItem('currentUser'));
+            if (!user) window.location.href = rootPath + 'login2.html';
+
+            document.getElementById('userName').textContent = user.name || 'User';
+            document.getElementById('userType').textContent = user.role || user.type || 'Student';
+
+            // Dynamic Sidebar Configuration
+            const menuConfig = {
+                student: {
+                    icon: 'fa-user-graduate',
+                    links: [
+                        { text: 'Dashboard', icon: 'fa-home', href: 'student/html/student-dashboard.html' },
+                        { text: 'Study', icon: 'fa-book-open', href: 'student/html/study.html' },
+                        { text: 'Attendance', icon: 'fa-calculator', href: 'student/html/attendance.html' },
+                        { text: 'Messages', icon: 'fa-comments', href: 'student/html/messages.html', badge: '0' },
+                        { text: 'Complaints', icon: 'fa-exclamation-triangle', href: 'student/html/complaints.html' },
+                        { text: 'Contacts', icon: 'fa-address-book', href: 'student/html/contacts.html' },
+                        { text: 'Profile', icon: 'fa-user', href: 'student/html/profile.html' }
+                    ]
+                },
+                teacher: {
+                    icon: 'fa-chalkboard-teacher',
+                    links: [
+                        { text: 'Dashboard', icon: 'fa-home', href: 'teachers/html/teachers-dashboard.html' },
+                        { text: 'My Classes', icon: 'fa-chalkboard', href: 'teachers/html/classes.html' },
+                        { text: 'Take Attendance', icon: 'fa-user-check', href: 'teachers/html/attendance.html' },
+                        { text: 'Messages', icon: 'fa-comments', href: 'teachers/html/messages.html' },
+                        { text: 'Profile', icon: 'fa-user', href: 'teachers/html/profile.html' }
+                    ]
+                },
+                hod: {
+                    icon: 'fa-user-tie',
+                    links: [
+                        { text: 'Dashboard', icon: 'fa-home', href: 'HOD/html/hod-dashboard.html' },
+                        { text: 'Staff', icon: 'fa-users', href: 'HOD/html/staff.html' },
+                        { text: 'Reports', icon: 'fa-chart-bar', href: 'HOD/html/reports.html' },
+                        { text: 'Messages', icon: 'fa-comments', href: 'HOD/html/messages.html' },
+                        { text: 'Profile', icon: 'fa-user', href: 'HOD/html/profile.html' }
+                    ]
+                }
+            };
+
+            function renderSidebar() {
+                const userRole = (user.role || user.type || 'student').toLowerCase();
+                const config = menuConfig[userRole] || menuConfig.student;
+                const navContainer = document.getElementById('sidebarNav');
+
+                // Set User Icon
+                const userIcon = document.getElementById('userIcon');
+                if (userIcon) userIcon.className = `fas ${config.icon}`;
+
+                // Set Role Badge in header
+                const roleBadge = document.getElementById('roleBadge');
+                if (roleBadge) roleBadge.textContent = userRole;
+
+                // Generate Links
+                let navHTML = config.links.map(link => `
+                <a href="${rootPath}${link.href}">
+                    <i class="fas ${link.icon}"></i> ${link.text}
+                    ${link.badge ? `<span class="badge">${link.badge}</span>` : ''}
+                </a>
+            `).join('');
+
+                const isDark = document.body.classList.contains('dark-mode') || localStorage.getItem('theme') === 'dark';
+                if (isDark) document.body.classList.add('dark-mode');
+
+                // Add Theme Toggle and Logout Link
+                navHTML += `
+                <div class="drawer-divider" style="margin: 15px 0; height: 1px; background: rgba(0,0,0,0.1);"></div>
+                <a href="#" onclick="toggleTheme(event)" class="theme-toggle" style="color: var(--text-muted); display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; text-decoration: none;">
+                    <i class="${isDark ? 'fas fa-sun' : 'fas fa-moon'}" style="width: 20px; text-align: center; margin-right: 5px;"></i> 
+                    <span id="themeText">${isDark ? 'Light Mode' : 'Dark Mode'}</span>
+                </a>
+                <a href="#" onclick="logout()" class="logout-link" style="color: #ef4444; display: block; padding: 10px 15px; border-radius: 8px; text-decoration: none;">
+                    <i class="fas fa-sign-out-alt" style="width: 20px; text-align: center; margin-right: 5px;"></i> Logout
+                </a>
+            `;
+
+                navContainer.innerHTML = navHTML;
+
+                // Highlight Active Link
+                const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+                const links = navContainer.querySelectorAll('a');
+                links.forEach(link => {
+                    if (link.getAttribute('href').endsWith(currentPage)) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            // Initialize
+            renderSidebar();
+
+            // Safe check for profile elements if they exist in parent
+            const profileName = document.getElementById('profileName');
+            if (profileName) profileName.textContent = user.name;
+
+            const profileEmail = document.getElementById('profileEmail');
+            if (profileEmail && user.email) profileEmail.textContent = user.email;
+
+            window.toggleTheme = function (e) {
+                if (e) e.preventDefault();
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                document.getElementById('themeText').innerText = isDark ? 'Light Mode' : 'Dark Mode';
+                document.querySelector('.theme-toggle i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            };
+
+            window.logout = function () {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('eduportal_session');
+                window.location.href = rootPath + 'login2.html';
+            }
+
+            // Notification Engine
+            async function initNotificationEngine() {
+                // Find all notification bell buttons (Top bar)
+                const bellBtns = document.querySelectorAll('.fa-bell');
+                if (bellBtns.length === 0) return;
+
+                // Create the dropdown container globally attached to the body
+                let notifDropdown = document.getElementById('globalNotifDropdown');
+                if (!notifDropdown) {
+                    notifDropdown = document.createElement('div');
+                    notifDropdown.id = 'globalNotifDropdown';
+                    notifDropdown.style.cssText = `
+                        position: absolute;
+                        right: 20px;
+                        top: 70px;
+                        width: 320px;
+                        background: var(--card-bg, #fff);
+                        border-radius: 12px;
+                        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                        border: 1px solid var(--border-color, #e2e8f0);
+                        z-index: 1000;
+                        display: none;
+                        flex-direction: column;
+                        max-height: 400px;
+                        overflow: hidden;
+                        transform-origin: top right;
+                        transition: opacity 0.2s, transform 0.2s;
+                        opacity: 0;
+                        transform: scale(0.95);
+                    `;
+                    document.body.appendChild(notifDropdown);
+
+                    // Add click outside to close
+                    document.addEventListener('click', (e) => {
+                        if (!e.target.closest('#globalNotifDropdown') && !e.target.closest('.icon-btn')) {
+                            closeNotifDropdown(notifDropdown);
+                        }
+                    });
+                }
+
+                try {
+                    // Static mock data
+                    const notifications = [
+                        { id: 1, message: "Welcome to EduPortal", time: "Just now", read: false, icon: "star" },
+                        { id: 2, message: "System Update", time: "2 hours ago", read: true, icon: "cog" }
+                    ];
+
+                    const unreadCount = notifications.filter(n => !n.read).length;
+
+                    bellBtns.forEach(bellIcon => {
+                        const btn = bellIcon.parentElement;
+                        btn.style.position = 'relative';
+
+                        // Add Badge if unread
+                        if (unreadCount > 0) {
+                            let badge = btn.querySelector('.notif-badge');
+                            if (!badge) {
+                                badge = document.createElement('div');
+                                badge.className = 'notif-badge';
+                                badge.style.cssText = `
+                                    position: absolute;
+                                    top: -2px;
+                                    right: -2px;
+                                    background: #ef4444;
+                                    color: white;
+                                    font-size: 10px;
+                                    font-weight: bold;
+                                    height: 16px;
+                                    min-width: 16px;
+                                    border-radius: 8px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    border: 2px solid white;
+                                    padding: 0 4px;
+                                `;
+                                btn.appendChild(badge);
+                            }
+                            badge.textContent = unreadCount;
+                        }
+
+                        // Toggle Dropdown logic
+                        btn.onclick = (e) => {
+                            e.stopPropagation();
+                            if (notifDropdown.style.display === 'flex') {
+                                closeNotifDropdown(notifDropdown);
+                            } else {
+                                openNotifDropdown(notifDropdown, notifications, btn);
+                            }
+                        };
+                    });
+
+                } catch (e) {
+                    console.error("Notification engine failed to load", e);
+                }
+            }
+
+            function openNotifDropdown(dropdown, notifications, triggerBtn) {
+                // Position calculation dynamically
+                const rect = triggerBtn.getBoundingClientRect();
+                dropdown.style.top = (rect.bottom + 10) + 'px';
+                dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+
+                // Build HTML
+                let html = `
+                    <div style="padding: 15px; border-bottom: 1px solid var(--border-color, #e2e8f0); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.02);">
+                        <h4 style="margin:0; font-size: 14px; color: var(--text-main, #333);">Notifications</h4>
+                        <span style="font-size: 12px; color: var(--primary-color, #7B05E3); cursor: pointer;" onclick="markAllRead()">Mark all as read</span>
+                    </div>
+                    <div style="overflow-y: auto; flex: 1;">
+                `;
+
+                if (notifications.length === 0) {
+                    html += `<div style="padding: 30px 20px; text-align: center; color: var(--text-muted, #999); font-size: 14px;">
+                        <i class="fas fa-bell-slash" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i><br>
+                        You're all caught up!
+                    </div>`;
+                } else {
+                    // Sort by newest first
+                    const sorted = [...notifications].reverse();
+                    sorted.forEach(n => {
+                        html += `
+                            <div style="padding: 12px 15px; border-bottom: 1px solid var(--border-color, #f1f5f9); display: flex; gap: 12px; align-items: flex-start; background: ${n.read ? 'transparent' : 'rgba(123, 5, 227, 0.05)'}; cursor: pointer;" onclick="markRead(${n.id})">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: ${n.read ? '#e2e8f0' : 'var(--primary-color, #7B05E3)'}; color: ${n.read ? '#64748b' : 'white'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="fas fa-${n.icon || 'bell'}" style="font-size: 12px;"></i>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; font-size: 13px; color: var(--text-main, #333); font-weight: ${n.read ? 'normal' : '600'};">${n.message}</p>
+                                    <span style="font-size: 11px; color: var(--text-muted, #999);">${n.time || 'Just now'}</span>
+                                </div>
+                                ${!n.read ? `<div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary-color, #7B05E3); margin-top: 6px; margin-left: auto;"></div>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
+                html += `</div>`;
+                dropdown.innerHTML = html;
+
+                // Show with animation
+                dropdown.style.display = 'flex';
+                setTimeout(() => {
+                    dropdown.style.opacity = '1';
+                    dropdown.style.transform = 'scale(1)';
+                }, 10);
+            }
+
+            function closeNotifDropdown(dropdown) {
+                dropdown.style.opacity = '0';
+                dropdown.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    dropdown.style.display = 'none';
+                }, 200);
+            }
+
+            window.markRead = function (id) {
+                console.log('Mark read:', id);
+            };
+
+            window.markAllRead = function () {
+                console.log('Mark all read');
+            };
+
+            // Run Engine after a short delay to ensure DOM is ready
+            setTimeout(initNotificationEngine, 500);
+
+        })();
+    </script>
+
+</body>
+
+</html>

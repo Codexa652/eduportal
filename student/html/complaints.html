@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../css/student-dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar will be injected here by JavaScript -->
+
+        <main class="main-content" style="padding: 24px;">
+            <div class="top-bar" style="margin-bottom: 30px;">
+                <div class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+
+                <div class="top-actions">
+                    <button class="icon-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="icon-btn">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Welcome Section -->
+            <div class="welcome-section"
+                style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                    <div>
+                        <h1 style="font-size: 28px; margin-bottom: 10px; font-weight: 700;">Submit a Support Ticket 🎫
+                        </h1>
+                        <p style="font-size: 16px; opacity: 0.9;">Report maintenance issues or academic concerns
+                            directly to the Head of Department.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; align-items: start;">
+                <div class="stat-card"
+                    style="padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); background: white;">
+                    <form id="complaintForm" onsubmit="submitComplaint(event)">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label class="form-label"
+                                style="font-weight: 600; color: #1e293b; margin-bottom: 8px;">Subject / Title</label>
+                            <input type="text" id="complaintTitle" required class="form-control"
+                                placeholder="e.g. Fan broken in Room 204"
+                                style="padding: 14px; font-size: 15px; border-radius: 10px; border: 2px solid #e2e8f0; background: #f8fafc;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 25px;">
+                            <label class="form-label"
+                                style="font-weight: 600; color: #1e293b; margin-bottom: 8px;">Detailed
+                                Description</label>
+                            <textarea id="complaintDesc" required class="form-control"
+                                style="min-height: 150px; padding: 14px; font-size: 15px; border-radius: 10px; border: 2px solid #e2e8f0; background: #f8fafc; resize: vertical;"
+                                placeholder="Please describe the issue in detail so we can route it accordingly..."></textarea>
+                        </div>
+                        <button type="submit" id="submitBtn" class="btn-primary"
+                            style="width: 100%; padding: 16px; font-size: 16px; font-weight: 700; border-radius: 12px; border: none; background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: white; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); transition: 0.2s transform;">
+                            <i class="fas fa-paper-plane" style="margin-right: 8px;"></i> File Ticket
+                        </button>
+                    </form>
+                    <div id="submitMsg"
+                        style="margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; display: none;">
+                    </div>
+                </div>
+
+                <div class="stat-card"
+                    style="padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); background: white;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9;">
+                        <h3 style="color: #1e293b; font-size: 18px; margin: 0;">My Active Tickets</h3>
+                        <span class="badge"
+                            style="background: #ef4444; color: white; padding: 4px 10px; border-radius: 20px;"
+                            id="ticketCount">0</span>
+                    </div>
+                    <div id="ticketsList"
+                        style="display: flex; flex-direction: column; gap: 15px; max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                        <div style="text-align:center; padding: 40px 20px; color: #94a3b8;">
+                            <i class="fas fa-ticket-alt"
+                                style="font-size: 48px; margin-bottom: 15px; opacity: 0.2;"></i>
+                            <p>Loading your tickets...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load user data
+        const session = JSON.parse(localStorage.getItem('eduportal_session'));
+        const user = session || JSON.parse(localStorage.getItem('currentUser'));
+
+        if (!user) {
+            window.location.href = '../../login2.html';
+        }
+
+        const apiUrl = `http://${window.location.hostname}:3000`;
+
+        async function loadTickets() {
+            try {
+                // Static mock data replacing db.json fetch
+                const tickets = [
+                    { id: 1, studentId: 1, title: 'Wi-Fi Issue in Lab 3', description: 'The network drops frequently during classes.', status: 'in progress', hodReply: 'We have dispatched IT to check the router.' },
+                    { id: 2, studentId: 1, title: 'Library Hours Extension', description: 'Can we keep the library open until 10 PM during exam week?', status: 'resolved', hodReply: 'Approved. Hours are extended effective immediately.' }
+                ];
+
+                const list = document.getElementById('ticketsList');
+                document.getElementById('ticketCount').textContent = tickets.length;
+
+                if (tickets.length === 0) {
+                    list.innerHTML = `
+                        <div style="text-align:center; padding: 40px 20px; color: #94a3b8;">
+                            <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 15px; opacity: 0.2; color: #10b981;"></i>
+                            <p>You have no active complaints. Great!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                list.innerHTML = '';
+                // Sort by newest first
+                tickets.reverse().forEach(t => {
+                    let statusColor = t.status === 'resolved' ? '#10b981' : (t.status === 'in progress' ? '#f59e0b' : '#ef4444');
+                    let iconMap = t.status === 'resolved' ? 'check-circle' : (t.status === 'in progress' ? 'tools' : 'clock');
+
+                    list.innerHTML += `
+                        <div style="background: #f8fafc; border-left: 4px solid ${statusColor}; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong style="color: #1e293b; font-size: 15px;">${t.title}</strong>
+                                <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: ${statusColor}; background: ${statusColor}15; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px;"><i class="fas fa-${iconMap}"></i> ${t.status}</span>
+                            </div>
+                            <p style="color: #64748b; font-size: 13px; margin: 0; line-height: 1.5;">${t.description}</p>
+                            ${t.hodReply ? `
+                                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1; font-size: 12px; color: #475569;">
+                                    <strong><i class="fas fa-reply" style="color: #3b82f6;"></i> HOD Response:</strong> ${t.hodReply}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+            } catch (e) {
+                console.error("Failed to load tickets", e);
+            }
+        }
+
+        async function submitComplaint(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const msg = document.getElementById('submitMsg');
+            const title = document.getElementById('complaintTitle').value;
+            const desc = document.getElementById('complaintDesc').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            btn.style.opacity = '0.7';
+
+            try {
+                // Mock network delay replacing POST requests
+                await new Promise(r => setTimeout(r, 600));
+
+                document.getElementById('complaintForm').reset();
+                msg.style.display = 'block';
+                msg.style.color = '#10b981';
+                msg.innerHTML = '<i class="fas fa-check-circle"></i> Ticket submitted successfully!';
+
+                // Append directly to UI for mock visual confirmation
+                const list = document.getElementById('ticketsList');
+                list.insertAdjacentHTML('afterbegin', `
+                    <div style="background: #f8fafc; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); animation: fadeInUp 0.4s ease-out;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong style="color: #1e293b; font-size: 15px;">${title}</strong>
+                            <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #f59e0b; background: #f59e0b15; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px;"><i class="fas fa-clock"></i> pending</span>
+                        </div>
+                        <p style="color: #64748b; font-size: 13px; margin: 0; line-height: 1.5;">${desc}</p>
+                    </div>
+                `);
+
+                setTimeout(() => { msg.style.display = 'none'; }, 5000);
+
+            } catch (error) {
+                msg.style.display = 'block';
+                msg.style.color = '#ef4444';
+                msg.innerHTML = '<i class="fas fa-times-circle"></i> Failed to submit. Server error.';
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane" style="margin-right: 8px;"></i> File Ticket';
+                btn.style.opacity = '1';
+            }
+        }
+
+        // Initialize API data
+        loadTickets();
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load sidebar');
+                return response.text();
+            })
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                const sidebar = doc.getElementById('sidebar');
+                const overlay = doc.getElementById('sidebarOverlay');
+                const scriptContent = doc.querySelector('script').textContent;
+
+                const container = document.querySelector('.dashboard-container');
+                if (sidebar && overlay) {
+                    const existingSidebar = document.getElementById('sidebar');
+                    const existingOverlay = document.getElementById('sidebarOverlay');
+                    if (existingSidebar) existingSidebar.remove();
+                    if (existingOverlay) existingOverlay.remove();
+
+                    container.prepend(sidebar);
+                    container.prepend(overlay);
+
+                    const script = document.createElement('script');
+                    script.textContent = scriptContent;
+                    document.body.appendChild(script);
+                }
+            })
+            .catch(err => console.error('Error loading sidebar:', err));
+
+        // Fallback toggle function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+    </script>
+</body>
+
+</html>

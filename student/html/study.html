@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPortal - Study Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../css/student-dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar will be injected here by JavaScript -->
+
+        <main class="main-content" style="padding: 24px;">
+            <div class="top-bar" style="margin-bottom: 30px;">
+                <div class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search study materials...">
+                </div>
+
+                <div class="top-actions">
+                    <button class="icon-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="icon-btn">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Welcome Section -->
+            <div class="welcome-section"
+                style="background: linear-gradient(135deg, #7B05E3 0%, #9333ea 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(123, 5, 227, 0.2);">
+                <h1 style="font-size: 28px; margin-bottom: 10px; font-weight: 700;">Welcome to the Study Hub, <span
+                        id="studyUserName">Student</span>! 🎓</h1>
+                <p style="font-size: 16px; opacity: 0.9;">Pick a mode below to start learning. Flashcards, essays, and
+                    practice arenas are loaded from the database.</p>
+            </div>
+
+            <!-- Hub Cards -->
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                <div class="stat-card"
+                    style="padding: 30px; text-align: center; border-radius: 20px; border: 2px solid transparent; transition: 0.3s; cursor: pointer; display: flex; flex-direction: column; align-items: center;"
+                    onclick="window.location.href='../studyhub/html/practice.html'"
+                    onmouseover="this.style.borderColor='#7B05E3'" onmouseout="this.style.borderColor='transparent'">
+                    <div
+                        style="width: 80px; height: 80px; background: rgba(123, 5, 227, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: #7B05E3; font-size: 32px;">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h2 style="font-size: 20px; color: #1e293b; margin-bottom: 10px;">Practice Arena</h2>
+                    <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Definitions + fill-in-the-blanks
+                        with instant checking</p>
+                    <button class="btn-primary"
+                        style="width: 100%; padding: 12px; border-radius: 10px; border: none; background: #f8fafc; color: #7B05E3; font-weight: 600; box-shadow: none;">Start
+                        Practice <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
+                </div>
+
+                <div class="stat-card"
+                    style="padding: 30px; text-align: center; border-radius: 20px; border: 2px solid transparent; transition: 0.3s; cursor: pointer; display: flex; flex-direction: column; align-items: center;"
+                    onclick="window.location.href='../studyhub/html/essay.html'"
+                    onmouseover="this.style.borderColor='#10b981'" onmouseout="this.style.borderColor='transparent'">
+                    <div
+                        style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: #10b981; font-size: 32px;">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h2 style="font-size: 20px; color: #1e293b; margin-bottom: 10px;">Essay Review</h2>
+                    <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Expand questions and read long-form
+                        detailed answers</p>
+                    <button class="btn-primary"
+                        style="width: 100%; padding: 12px; border-radius: 10px; border: none; background: #f8fafc; color: #10b981; font-weight: 600; box-shadow: none;">Read
+                        Essays <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
+                </div>
+
+                <div class="stat-card"
+                    style="padding: 30px; text-align: center; border-radius: 20px; border: 2px solid transparent; transition: 0.3s; cursor: pointer; display: flex; flex-direction: column; align-items: center;"
+                    onclick="window.location.href='../studyhub/html/flashcard.html'"
+                    onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='transparent'">
+                    <div
+                        style="width: 80px; height: 80px; background: rgba(245, 158, 11, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: #f59e0b; font-size: 32px;">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h2 style="font-size: 20px; color: #1e293b; margin-bottom: 10px;">Flashcards</h2>
+                    <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Flip cards and move through a full
+                        memory deck session</p>
+                    <button class="btn-primary"
+                        style="width: 100%; padding: 12px; border-radius: 10px; border: none; background: #f8fafc; color: #f59e0b; font-weight: 600; box-shadow: none;">Start
+                        Deck <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
+                </div>
+            </div>
+
+            <div
+                style="margin-top: 30px; padding: 25px; background: white; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; align-items: center; gap: 20px;">
+                <div style="font-size: 40px; color: #cbd5e1;"><i class="fas fa-lightbulb"></i></div>
+                <div>
+                    <h3 style="color: #333; margin-bottom: 5px; font-size: 16px;">Daily Tip</h3>
+                    <p style="color: #64748b; font-size: 14px; margin: 0;">Try mixing Flashcards and Practice Arena for
+                        maximum retention. Good luck!</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Load user data
+        const session = JSON.parse(localStorage.getItem('eduportal_session'));
+        const user = session || JSON.parse(localStorage.getItem('currentUser'));
+
+        if (!user) {
+            window.location.href = '../../login2.html';
+        }
+
+        document.getElementById('studyUserName').textContent = user.name || 'Student';
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load sidebar');
+                return response.text();
+            })
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                const sidebar = doc.getElementById('sidebar');
+                const overlay = doc.getElementById('sidebarOverlay');
+                const scriptContent = doc.querySelector('script').textContent;
+
+                const container = document.querySelector('.dashboard-container');
+                if (sidebar && overlay) {
+                    const existingSidebar = document.getElementById('sidebar');
+                    const existingOverlay = document.getElementById('sidebarOverlay');
+                    if (existingSidebar) existingSidebar.remove();
+                    if (existingOverlay) existingOverlay.remove();
+
+                    container.prepend(sidebar);
+                    container.prepend(overlay);
+
+                    const script = document.createElement('script');
+                    script.textContent = scriptContent;
+                    document.body.appendChild(script);
+                }
+            })
+            .catch(err => console.error('Error loading sidebar:', err));
+
+        // Fallback toggle function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+    </script>
+</body>
+
+</html>

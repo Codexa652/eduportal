@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Classes | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../../student/css/student-dashboard.css">
+    <link rel="stylesheet" href="../../HOD/css/hod-dashboard.css">
+    <style>
+        .page-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #fb9e3f 0%, #f97316 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-section h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search..."></div>
+                <div class="top-actions"><button class="icon-btn"><i class="fas fa-bell"></i></button></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content fade-in">
+                <div class="welcome-section">
+                    <h1>My Classes</h1>
+                    <p>Overview of all your scheduled classes and syllabus.</p>
+                </div>
+
+                <div id="classesContainer" class="stats-grid">
+                    <!-- Dynamic classes injected here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check Session
+        const session = JSON.parse(localStorage.getItem('eduportal_session')) || JSON.parse(localStorage.getItem('currentUser'));
+        if (!session || session.role !== 'teacher') window.location.href = '../../login2.html';
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(res => res.text())
+            .then(data => {
+                const doc = new DOMParser().parseFromString(data, 'text/html');
+                const container = document.querySelector('.dashboard-container');
+                container.prepend(doc.getElementById('sidebar'));
+                container.prepend(doc.getElementById('sidebarOverlay'));
+                const script = document.createElement('script');
+                script.textContent = doc.querySelector('script').textContent;
+                document.body.appendChild(script);
+            });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar')?.classList.toggle('active');
+            document.getElementById('sidebarOverlay')?.classList.toggle('active');
+        }
+
+        async function loadTeacherClasses() {
+            const container = document.getElementById('classesContainer');
+            try {
+                // Static Mock Subjects replacing db.json API
+                const subjects = [
+                    { id: 1, name: "Advanced Mathematics", code: "MAT301", teacherId: 2, credits: 4 },
+                    { id: 2, name: "Physics", code: "PHY201", teacherId: 2, credits: 3 }
+                ];
+
+                if (subjects.length === 0) {
+                    container.innerHTML = `<div class="stat-card" style="grid-column: span 3; text-align: center; padding: 40px;">
+                        <p style="color: #999;">No classes assigned yet.</p>
+                    </div>`;
+                    return;
+                }
+
+                // For each subject, map static syllabus progress
+                let html = '';
+                for (let subject of subjects) {
+                    let syllabusList = [];
+                    if (subject.id === 1) {
+                        syllabusList = [
+                            { id: 1, subjectId: 1, topic: "Calculus", completed: true },
+                            { id: 2, subjectId: 1, topic: "Integration", completed: false }
+                        ];
+                    } else if (subject.id === 2) {
+                        syllabusList = [
+                            { id: 3, subjectId: 2, topic: "Kinematics", completed: true },
+                            { id: 4, subjectId: 2, topic: "Dynamics", completed: true }
+                        ];
+                    }
+
+                    const completedCount = syllabusList.filter(s => s.completed).length;
+                    const totalCount = syllabusList.length || 1;
+                    const percent = Math.round((completedCount / totalCount) * 100);
+
+                    let syllabusHTML = syllabusList.map(item => `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span>${item.topic}</span>
+                            <span class="status-pill status-${item.completed ? 'good' : 'watch'}">${item.completed ? 'Done' : 'Pending'}</span>
+                        </div>
+                    `).join('');
+
+                    html += `
+                        <div class="stat-card">
+                            <h3 style="color: #333; margin-bottom: 10px; font-size: 20px;">${subject.name}</h3>
+                            <div style="margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; color: #666;">
+                                    <span>Syllabus Completion</span>
+                                    <span>${percent}%</span>
+                                </div>
+                                <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${percent}%; background: #f97316; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <h4 style="font-size: 14px; color: #999; margin-bottom: 10px; text-transform: uppercase;">Topics</h4>
+                            <div style="max-height: 150px; overflow-y: auto;">
+                                ${syllabusHTML || '<p style="color: #999; font-size: 14px;">No topics recorded.</p>'}
+                            </div>
+                            <button class="btn-primary" style="margin-top: 15px; width: 100%; padding: 10px; border: none; background: #f97316; color: white; border-radius: 8px; cursor: pointer;">Manage Syllabus</button>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<p style="color: red;">Error loading classes.</p>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(loadTeacherClasses, 100);
+        });
+    </script>
+</body>
+
+</html>

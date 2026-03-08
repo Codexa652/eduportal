@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Profile | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../../student/css/student-dashboard.css">
+    <link rel="stylesheet" href="../css/hod-dashboard.css">
+    <style>
+        .page-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-section h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search..."></div>
+                <div class="top-actions"><button class="icon-btn"><i class="fas fa-bell"></i></button></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content fade-in">
+                <div class="welcome-section">
+                    <h1>My Profile</h1>
+                    <p>Manage your Head of Department details.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card"
+                        style="grid-column: span 3; padding: 40px; display: flex; align-items: center; gap: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <i class="fas fa-user-tie" style="font-size: 80px; color: #10b981;"></i>
+                        <div>
+                            <h3 id="profileName" style="color: #333; font-size: 24px; margin-bottom: 5px;">Loading...
+                            </h3>
+                            <p id="profileEmail" style="color: #666; font-size: 16px; margin-bottom: 15px;">Loading...
+                            </p>
+                            <span
+                                style="display: inline-block; background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 5px 15px; border-radius: 20px; font-weight: 600;">Head
+                                of Department</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid" style="margin-top: 20px;">
+                    <div class="stat-card"
+                        style="grid-column: span 3; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <h3
+                            style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; color: #333;">
+                            Department Settings</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <label
+                                    style="display: block; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px;">Department</label>
+                                <p style="font-weight: 600; color: #444;">Computer Engineering</p>
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px;">Building</label>
+                                <p style="font-weight: 600; color: #444;">Block A, 3rd Floor</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check Session
+        const session = JSON.parse(localStorage.getItem('eduportal_session')) || JSON.parse(localStorage.getItem('currentUser'));
+        if (!session || session.role !== 'hod') window.location.href = '../../login2.html';
+
+        document.getElementById('profileName').innerText = session.name || "HOD Profile";
+        document.getElementById('profileEmail').innerText = session.email || "No Email Found";
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(res => res.text())
+            .then(data => {
+                const doc = new DOMParser().parseFromString(data, 'text/html');
+                const container = document.querySelector('.dashboard-container');
+                container.prepend(doc.getElementById('sidebar'));
+                container.prepend(doc.getElementById('sidebarOverlay'));
+                const script = document.createElement('script');
+                script.textContent = doc.querySelector('script').textContent;
+                document.body.appendChild(script);
+            });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar')?.classList.toggle('active');
+            document.getElementById('sidebarOverlay')?.classList.toggle('active');
+        }
+    </script>
+</body>
+
+</html>

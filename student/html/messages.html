@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../css/student-dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar will be injected here by JavaScript -->
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search..."></div>
+                <div class="top-actions">
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                </div>
+            </div>
+
+            <div class="content fade-in">
+                <h1>Messages</h1>
+                <div class="stat-card" style="margin-top: 20px;">
+                    <div class="stat-icon"><i class="fas fa-envelope-open"></i></div>
+                    <div class="stat-info">
+                        <h3>Inbox</h3>
+                        <p>No new messages</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load user data
+        const session = JSON.parse(localStorage.getItem('eduportal_session'));
+        const user = session || JSON.parse(localStorage.getItem('currentUser'));
+
+        if (!user) {
+            window.location.href = '../../login2.html';
+        }
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load sidebar');
+                return response.text();
+            })
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                const sidebar = doc.getElementById('sidebar');
+                const overlay = doc.getElementById('sidebarOverlay');
+                const scriptContent = doc.querySelector('script').textContent;
+
+                const container = document.querySelector('.dashboard-container');
+                if (sidebar && overlay) {
+                    const existingSidebar = document.getElementById('sidebar');
+                    const existingOverlay = document.getElementById('sidebarOverlay');
+                    if (existingSidebar) existingSidebar.remove();
+                    if (existingOverlay) existingOverlay.remove();
+
+                    container.prepend(sidebar);
+                    container.prepend(overlay);
+
+                    const script = document.createElement('script');
+                    script.textContent = scriptContent;
+                    document.body.appendChild(script);
+                }
+            })
+            .catch(err => console.error('Error loading sidebar:', err));
+
+        // Fallback toggle function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

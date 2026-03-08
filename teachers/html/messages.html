@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Messages | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../../student/css/student-dashboard.css">
+    <link rel="stylesheet" href="../../HOD/css/hod-dashboard.css">
+    <style>
+        .page-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #fb9e3f 0%, #f97316 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-section h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search..."></div>
+                <div class="top-actions"><button class="icon-btn"><i class="fas fa-bell"></i></button></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content fade-in">
+                <div class="welcome-section">
+                    <h1>Messages</h1>
+                    <p>Communicate with students and department heads.</p>
+                </div>
+
+                <div class="stats-grid" id="messagesContainer">
+                    <div class="stat-card" style="grid-column: span 3; text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin"
+                            style="font-size: 48px; color: #f97316; margin-bottom: 15px;"></i>
+                        <h3 style="color: #666;">Loading Messages...</h3>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check Session
+        const session = JSON.parse(localStorage.getItem('eduportal_session')) || JSON.parse(localStorage.getItem('currentUser'));
+        if (!session || session.role !== 'teacher') window.location.href = '../../login2.html';
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(res => res.text())
+            .then(data => {
+                const doc = new DOMParser().parseFromString(data, 'text/html');
+                const container = document.querySelector('.dashboard-container');
+                container.prepend(doc.getElementById('sidebar'));
+                container.prepend(doc.getElementById('sidebarOverlay'));
+                const script = document.createElement('script');
+                script.textContent = doc.querySelector('script').textContent;
+                document.body.appendChild(script);
+            });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar')?.classList.toggle('active');
+            document.getElementById('sidebarOverlay')?.classList.toggle('active');
+        }
+
+        async function loadTeacherMessages() {
+            const container = document.getElementById('messagesContainer');
+            try {
+                // Static Mock Data replacing db.json fetch
+                const messages = [];
+                const userMap = { 1: { name: 'Aditya', role: 'student' } };
+
+                let html = `
+                    <div class="stat-card" style="grid-column: span 3;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="color: #333; font-size: 18px;">Inbox</h3>
+                            <button onclick="alert('Feature to send messages coming soon!')" class="btn-primary" style="padding: 8px 15px; background: #f97316; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">New Message</button>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                `;
+
+                if (messages.length === 0) {
+                    html += `<p style="color: #999; padding: 20px; text-align: center;">No messages in your inbox.</p>`;
+                } else {
+                    messages.reverse().forEach(msg => {
+                        const sender = userMap[msg.senderId] || { name: 'Unknown User', role: 'user' };
+                        const timeString = new Date(msg.timestamp).toLocaleString();
+                        html += `
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; transition: 0.2s;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <div>
+                                        <strong style="color: #333;">${sender.name}</strong>
+                                        <span class="badge" style="margin-left: 5px; font-size: 10px;">${sender.role}</span>
+                                    </div>
+                                    <span style="font-size: 12px; color: #94a3b8;">${timeString}</span>
+                                </div>
+                                <p style="color: #475569; font-size: 14px; margin: 0;">${msg.content}</p>
+                            </div>
+                        `;
+                    });
+                }
+
+                html += `</div></div>`;
+                container.innerHTML = html;
+
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<p style="color: red; padding: 20px;">Error loading messages.</p>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(loadTeacherMessages, 100);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,159 @@
+/* --- Premium Flashcards Design System --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    color: #64748b;
+}
+
+/* --- Navigation --- */
+.nav-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.back-btn {
+    text-decoration: none;
+}
+
+.flashcard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 80vh;
+}
+
+/* --- The Arena & 3D Mechanics --- */
+.scene {
+    width: 100%;
+    max-width: 650px;
+    height: 420px;
+    perspective: 1200px;
+    margin: 3rem 0 4rem 0;
+}
+
+.card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+    cursor: pointer;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.1);
+    border-radius: 24px;
+}
+
+.card.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    text-align: center;
+    border-radius: 24px;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+}
+
+.card-face p {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.5;
+}
+
+.label {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 800;
+    color: #7B05E3;
+}
+
+.card-back .label {
+    color: #10b981;
+}
+
+.hint {
+    position: absolute;
+    bottom: 2rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    background: #f1f5f9;
+    padding: 6px 16px;
+    border-radius: 20px;
+}
+
+.card-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-color: #d1fae5;
+}
+
+/* --- Controls --- */
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+}
+
+.nav-btn {
+    background: linear-gradient(135deg, #7B05E3 0%, #9333ea 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+
+.nav-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(123, 5, 227, 0.4);
+    filter: brightness(1.1);
+}
+
+.nav-btn:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.progress-counter {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    min-width: 60px;
+    text-align: center;
+}

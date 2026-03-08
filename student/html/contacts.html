@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/student-dashboard.css">
+    <link rel="stylesheet" href="../css/contacts.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar will be injected here by JavaScript -->
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="nav-wrapper">
+                    <div class="menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <h2 class="page-title">Contacts Directory</h2>
+                </div>
+                <div class="top-actions">
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                </div>
+            </div>
+
+            <div class="content fade-in">
+                <div class="search-bar-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="contactSearch" placeholder="Search teachers or staff..." onkeyup="filterContacts()">
+                </div>
+
+                <div id="contactsGrid" class="contacts-grid">
+                    <!-- Contacts will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/student-loader.js"></script>
+    <script src="../js/contacts.js"></script>
+</body>
+</html>

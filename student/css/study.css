@@ -1,0 +1,105 @@
+/* --- Color Palette (aligned with auth.html) --- */
+:root {
+    --primary-color: #667eea;
+    --accent-color: #764ba2;
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.hub {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1rem 0;
+}
+
+.hub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.hub-header h1 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    line-height: 1.1;
+}
+
+.hub-header p {
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+
+.hub-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.hub-card h2 {
+    font-size: 1.25rem;
+}
+
+.hub-card p {
+    color: var(--text-muted);
+}
+
+.hub-card a {
+    margin-top: auto;
+    display: inline-block;
+    text-decoration: none;
+    background: var(--accent-color);
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.hub-card a:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+}
+
+.hub-card a:active {
+    transform: scale(0.99);
+}
+
+.hub-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    border-color: var(--primary-color);
+}
+
+/* Mobile Enhancements */
+@media (max-width: 768px) {
+    .hub-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}

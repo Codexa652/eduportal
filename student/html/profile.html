@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../css/student-dashboard.css">
+    <style>
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar will be injected here by JavaScript -->
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search..."></div>
+                <div class="top-actions">
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                </div>
+            </div>
+
+            <div class="content fade-in">
+                <h1>My Profile</h1>
+                <div class="stat-card" style="display: block; margin-top: 20px; max-width: 800px;">
+                    <div class="profile-header">
+                        <div class="stat-icon" style="width: 80px; height: 80px; font-size: 32px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h2 id="profileName" style="margin-bottom: 5px;">Student Name</h2>
+                            <p style="font-size: 1rem; color: var(--text-muted);">Computer Engineering</p>
+                        </div>
+                    </div>
+                    <div class="profile-grid">
+                        <div>
+                            <label class="form-label">Email Address</label>
+                            <p style="font-weight: 600; font-size: 1.1rem;" id="profileEmail">student@example.com</p>
+                        </div>
+                        <div>
+                            <label class="form-label">PRN / ID</label>
+                            <p style="font-weight: 600; font-size: 1.1rem;">72145678</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load user data
+        const session = JSON.parse(localStorage.getItem('eduportal_session'));
+        const user = session || JSON.parse(localStorage.getItem('currentUser'));
+
+        if (!user) {
+            window.location.href = '../../login2.html';
+        }
+
+        // Profile specific logic
+        document.getElementById('profileName').textContent = user.name;
+        if (user.email) document.getElementById('profileEmail').textContent = user.email;
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load sidebar');
+                return response.text();
+            })
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                const sidebar = doc.getElementById('sidebar');
+                const overlay = doc.getElementById('sidebarOverlay');
+                const scriptContent = doc.querySelector('script').textContent;
+
+                const container = document.querySelector('.dashboard-container');
+                if (sidebar && overlay) {
+                    const existingSidebar = document.getElementById('sidebar');
+                    const existingOverlay = document.getElementById('sidebarOverlay');
+                    if (existingSidebar) existingSidebar.remove();
+                    if (existingOverlay) existingOverlay.remove();
+
+                    container.prepend(sidebar);
+                    container.prepend(overlay);
+
+                    const script = document.createElement('script');
+                    script.textContent = scriptContent;
+                    document.body.appendChild(script);
+                }
+            })
+            .catch(err => console.error('Error loading sidebar:', err));
+
+        // Fallback toggle function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+    </script>
+</body>
+
+</html>

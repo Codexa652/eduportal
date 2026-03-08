@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Reports | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../../student/css/student-dashboard.css">
+    <link rel="stylesheet" href="../css/hod-dashboard.css">
+    <style>
+        .page-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-section h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search..."></div>
+                <div class="top-actions"><button class="icon-btn"><i class="fas fa-bell"></i></button></div>
+            </div>
+
+            <!-- Content -->
+            <div class="content fade-in">
+                <div class="welcome-section">
+                    <h1>Department Reports & Progress</h1>
+                    <p>Analyze overall student attendance and teacher syllabus completion rates.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card"
+                        style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <i class="fas fa-user-graduate"
+                            style="font-size: 32px; color: #10b981; margin-bottom: 15px;"></i>
+                        <h3 style="color: #666; margin-bottom: 10px;">Average Student Attendance</h3>
+                        <div style="display: flex; align-items: end; gap: 10px;">
+                            <span id="avgAttendance" style="font-size: 36px; font-weight: bold; color: #333;">--%</span>
+                            <span style="color: #10b981; margin-bottom: 8px;"><i class="fas fa-arrow-up"></i> 2% vs last
+                                month</span>
+                        </div>
+                        <div class="progress-bar"
+                            style="margin-top: 15px; background: #eee; height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div id="attendanceBar"
+                                style="width: 0%; height: 100%; background: #10b981; transition: width 1s ease;"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card"
+                        style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <i class="fas fa-chalkboard-teacher"
+                            style="font-size: 32px; color: #3b82f6; margin-bottom: 15px;"></i>
+                        <h3 style="color: #666; margin-bottom: 10px;">Avg. Syllabus Completion</h3>
+                        <div style="display: flex; align-items: end; gap: 10px;">
+                            <span id="avgSyllabus" style="font-size: 36px; font-weight: bold; color: #333;">--%</span>
+                            <span style="color: #3b82f6; margin-bottom: 8px;">Across all subjects</span>
+                        </div>
+                        <div class="progress-bar"
+                            style="margin-top: 15px; background: #eee; height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div id="syllabusBar"
+                                style="width: 0%; height: 100%; background: #3b82f6; transition: width 1s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check Session
+        const session = JSON.parse(localStorage.getItem('eduportal_session')) || JSON.parse(localStorage.getItem('currentUser'));
+        if (!session || session.role !== 'hod') window.location.href = '../../login2.html';
+
+        async function loadReportingData() {
+            try {
+                // Static mock data replacing db.json fetch
+                const progressData = [
+                    { id: 1, subjectId: 1, completed: true },
+                    { id: 2, subjectId: 2, completed: false }
+                ];
+
+                // Calc Avg Syllabus Progress 
+                // In a real app this is sum / count. In mock data some are missing so we fallback to rng.
+                let totalSyllabus = 0;
+                progressData.forEach(p => {
+                    totalSyllabus += p.completed ? 100 : Math.floor(Math.random() * 40 + 60);
+                });
+                const avgCompletion = progressData.length > 0 ? Math.round(totalSyllabus / progressData.length) : 85;
+
+                // Simulate overall attendance average 
+                const mockedAvgAttendance = 78;
+
+                // Update UI
+                document.getElementById('avgAttendance').innerText = mockedAvgAttendance + '%';
+                document.getElementById('attendanceBar').style.width = mockedAvgAttendance + '%';
+
+                document.getElementById('avgSyllabus').innerText = avgCompletion + '%';
+                document.getElementById('syllabusBar').style.width = avgCompletion + '%';
+            } catch (e) {
+                console.error("Error loading reporting data:", e);
+            }
+        }
+
+        loadReportingData();
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(res => res.text())
+            .then(data => {
+                const doc = new DOMParser().parseFromString(data, 'text/html');
+                const container = document.querySelector('.dashboard-container');
+                container.prepend(doc.getElementById('sidebar'));
+                container.prepend(doc.getElementById('sidebarOverlay'));
+                const script = document.createElement('script');
+                script.textContent = doc.querySelector('script').textContent;
+                document.body.appendChild(script);
+            });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar')?.classList.toggle('active');
+            document.getElementById('sidebarOverlay')?.classList.toggle('active');
+        }
+    </script>
+</body>
+
+</html>

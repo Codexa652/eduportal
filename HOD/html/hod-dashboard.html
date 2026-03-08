@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HOD Dashboard | Tickets</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../../student/css/student-dashboard.css">
+    <link rel="stylesheet" href="../css/hod-dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar will be injected here by JavaScript -->
+
+        <main class="main-content" style="padding: 24px;">
+            <div class="top-bar" style="margin-bottom: 30px;">
+                <div class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search records...">
+                </div>
+
+                <div class="top-actions">
+                    <button class="icon-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="icon-btn">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="workspace-header"
+                style="background: linear-gradient(135deg, #C918D9 0%, #DC61F2 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(203, 23, 218, 0.2);">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                    <div>
+                        <h1 style="font-size: 28px; margin-bottom: 10px; font-weight: 700;">Department Overview</h1>
+                        <p style="font-size: 16px; opacity: 0.9;">Monitor active tickets, staff performance, and student
+                            metrics.</p>
+                    </div>
+                    <button class="primary-btn"
+                        style="background: white; color: #7B05E3; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 600;"
+                        onclick="window.print()">
+                        <i class="fas fa-print" style="margin-right: 8px;"></i> Generate Report
+                    </button>
+                </div>
+            </div>
+
+            <div class="summary-grid" style="margin-bottom: 30px;">
+                <div class="summary-card"
+                    style="border-radius: 16px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                    <div class="summary-label" style="color: #64748b; font-size: 14px; font-weight: 600;">Total Students
+                    </div>
+                    <div class="summary-value" id="studentCount"
+                        style="color: #0f172a; font-size: 32px; font-weight: 800; margin: 10px 0;">--</div>
+                    <div class="summary-sub" style="color: #10b981; font-size: 12px; font-weight: 600;"><i
+                            class="fas fa-arrow-up"></i> Live Count</div>
+                </div>
+                <div class="summary-card"
+                    style="border-radius: 16px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                    <div class="summary-label" style="color: #64748b; font-size: 14px; font-weight: 600;">Total Teachers
+                    </div>
+                    <div class="summary-value" id="teacherCount"
+                        style="color: #0f172a; font-size: 32px; font-weight: 800; margin: 10px 0;">--</div>
+                    <div class="summary-sub" style="color: #64748b; font-size: 12px; font-weight: 600;">Full-time
+                        faculty</div>
+                </div>
+                <div class="summary-card"
+                    style="border-radius: 16px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-left: 4px solid #f59e0b;">
+                    <div class="summary-label" style="color: #64748b; font-size: 14px; font-weight: 600;">Active
+                        Complaints</div>
+                    <div class="summary-value" id="activeTickets"
+                        style="color: #f59e0b; font-size: 32px; font-weight: 800; margin: 10px 0;">--</div>
+                    <div class="summary-sub" style="color: #f59e0b; font-size: 12px; font-weight: 600;">Pending & In
+                        Progress</div>
+                </div>
+                <div class="summary-card"
+                    style="border-radius: 16px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-left: 4px solid #10b981;">
+                    <div class="summary-label" style="color: #64748b; font-size: 14px; font-weight: 600;">Resolved
+                        Tickets</div>
+                    <div class="summary-value" id="resolvedTickets"
+                        style="color: #10b981; font-size: 32px; font-weight: 800; margin: 10px 0;">--</div>
+                    <div class="summary-sub" style="color: #10b981; font-size: 12px; font-weight: 600;">All time</div>
+                </div>
+            </div>
+
+            <!-- Enhanced Ticketing Queue -->
+            <div class="table-container"
+                style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h3 style="color: #1e293b; font-size: 20px; font-weight: 700;">Live Ticket Queue</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <span
+                            style="font-size: 12px; font-weight: 600; padding: 6px 12px; background: #fee2e2; color: #ef4444; border-radius: 20px;">Pending</span>
+                        <span
+                            style="font-size: 12px; font-weight: 600; padding: 6px 12px; background: #fef3c7; color: #f59e0b; border-radius: 20px;">In
+                            Progress</span>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="hod-table" style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
+                        <thead
+                            style="background: #f8fafc; color: #64748b; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">
+                            <tr>
+                                <th style="padding: 15px; border-radius: 10px 0 0 10px; text-align: left;">Ticket ID
+                                </th>
+                                <th style="padding: 15px; text-align: left;">Student</th>
+                                <th style="padding: 15px; text-align: left;">Issue / Description</th>
+                                <th style="padding: 15px; text-align: center;">Status</th>
+                                <th style="padding: 15px; border-radius: 0 10px 10px 0; text-align: center;">Quick
+                                    Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketsQueueBody">
+                            <tr>
+                                <td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;"><i
+                                        class="fas fa-spinner fa-spin"></i> Loading tickets...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Quick Reply Modal (Hidden by default) -->
+    <div id="replyModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div
+            style="background: white; width: 90%; max-width: 500px; border-radius: 20px; padding: 30px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: #1e293b; font-size: 20px; margin: 0;">Resolve Ticket</h3>
+                <i class="fas fa-times" style="color: #94a3b8; cursor: pointer; font-size: 20px;"
+                    onclick="closeReplyModal()"></i>
+            </div>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Add a resolution note. The student will be
+                notified.</p>
+            <textarea id="replyNote" class="form-control"
+                style="width: 100%; min-height: 120px; padding: 15px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 14px; margin-bottom: 20px; resize: vertical;"
+                placeholder="Type your response here..."></textarea>
+
+            <input type="hidden" id="replyTicketId">
+            <input type="hidden" id="replyStudentId">
+
+            <div style="display: flex; gap: 15px;">
+                <button onclick="closeReplyModal()"
+                    style="flex: 1; padding: 14px; background: #f1f5f9; color: #475569; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancel</button>
+                <button onclick="submitResolution()"
+                    style="flex: 1; padding: 14px; background: #10b981; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"><i
+                        class="fas fa-check"></i> Mark Resolved</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load user data
+        const session = JSON.parse(localStorage.getItem('eduportal_session'));
+        const user = session || JSON.parse(localStorage.getItem('currentUser'));
+
+        if (!user || user.role !== 'hod') {
+            window.location.href = '../../login2.html';
+        }
+
+        const apiUrl = `http://${window.location.hostname}:3000`;
+        let usersDict = {};
+
+        // Fetch Analytics & Tickets for HOD Dashboard
+        async function loadHODDashboard() {
+            try {
+                // Static mock data replacing db.json fetch
+                const users = [
+                    { id: 1, name: 'Aditya', role: 'student' },
+                    { id: 2, name: 'Rahul Sir', role: 'teacher' },
+                    { id: 3, name: 'Sharma Sir', role: 'hod' },
+                    { id: 4, name: 'Priya', role: 'student' }
+                ];
+
+                const tickets = [
+                    { id: 1, studentId: 1, title: 'Wi-Fi Issue in Lab 3', status: 'in progress', description: 'Network drops frequently' },
+                    { id: 2, studentId: 1, title: 'Library Hours Extension', status: 'resolved', description: 'Extend hours until 10 PM' }
+                ];
+
+                // Map users for fast lookup
+                users.forEach(u => usersDict[u.id] = u.name);
+
+                // Update Stats
+                const students = users.filter(u => u.role === 'student').length;
+                const teachers = users.filter(u => u.role === 'teacher').length;
+                const active = tickets.filter(t => t.status !== 'resolved').length;
+                const resolved = tickets.filter(t => t.status === 'resolved').length;
+
+                document.getElementById('studentCount').innerText = students;
+                document.getElementById('teacherCount').innerText = teachers;
+                document.getElementById('activeTickets').innerText = active;
+                document.getElementById('activeTickets').style.color = active > 5 ? '#ef4444' : '#f59e0b';
+                document.getElementById('resolvedTickets').innerText = resolved;
+
+                // Render Tickets Table
+                renderTicketsTable(tickets);
+
+            } catch (e) {
+                console.warn("Failed to load HOD dashboard data", e);
+                document.getElementById('ticketsQueueBody').innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: #ef4444;">Failed to connect to JSON Database. Is json-server running?</td></tr>`;
+            }
+        }
+
+        function renderTicketsTable(tickets) {
+            const tbody = document.getElementById('ticketsQueueBody');
+
+            if (tickets.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: #94a3b8;">No tickets in the system.</td></tr>`;
+                return;
+            }
+
+            // Sort: Pending -> In Progress -> Resolved, then by ID desc
+            tickets.sort((a, b) => {
+                const priority = { 'pending': 1, 'in progress': 2, 'resolved': 3 };
+                if (priority[a.status] !== priority[b.status]) return priority[a.status] - priority[b.status];
+                return b.id - a.id;
+            });
+
+            tbody.innerHTML = '';
+            tickets.forEach(t => {
+                const sName = usersDict[t.studentId] || 'Unknown Student';
+
+                let sStyle = t.status === 'resolved' ? 'background: #d1fae5; color: #10b981;' : (t.status === 'in progress' ? 'background: #fef3c7; color: #f59e0b;' : 'background: #fee2e2; color: #ef4444;');
+                let actionsHTML = '';
+
+                if (t.status === 'pending') {
+                    actionsHTML = `<button onclick="updateTicketStatus(${t.id}, 'in progress')" style="padding: 6px 12px; background: #e0f2fe; color: #0284c7; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;"><i class="fas fa-eye"></i> Investigate</button>`;
+                } else if (t.status === 'in progress') {
+                    actionsHTML = `<button onclick="openReplyModal(${t.id}, ${t.studentId})" style="padding: 6px 12px; background: #d1fae5; color: #10b981; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;"><i class="fas fa-check"></i> Resolve</button>`;
+                } else {
+                    actionsHTML = `<span style="color: #94a3b8; font-size: 13px;"><i class="fas fa-lock"></i> Closed</span>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr style="background: white; transform: scale(1); transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                        <td style="padding: 15px; border-bottom: 1px solid #f1f5f9; border-radius: 10px 0 0 10px;">
+                            <span style="font-weight: 700; color: #475569;">#TK-${t.id}</span>
+                        </td>
+                        <td style="padding: 15px; border-bottom: 1px solid #f1f5f9;">
+                            <div style="font-weight: 600; color: #1e293b;">${sName}</div>
+                            <div style="font-size: 11px; color: #94a3b8;">ID: ${t.studentId}</div>
+                        </td>
+                        <td style="padding: 15px; border-bottom: 1px solid #f1f5f9; max-width: 300px;">
+                            <div style="font-weight: 600; color: #1e293b; margin-bottom: 4px;">${t.title}</div>
+                            <div style="font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.description}</div>
+                        </td>
+                        <td style="padding: 15px; border-bottom: 1px solid #f1f5f9; text-align: center;">
+                            <span style="padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; ${sStyle}">${t.status}</span>
+                        </td>
+                        <td style="padding: 15px; border-bottom: 1px solid #f1f5f9; text-align: center; border-radius: 0 10px 10px 0;">
+                            ${actionsHTML}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function updateTicketStatus(id, newStatus) {
+            try {
+                // Mock network delay replacing PATCH request
+                await new Promise(r => setTimeout(r, 400));
+
+                alert(`[Mock Feature] Ticket #TK-${id} status would be updated to: ${newStatus}`);
+
+            } catch (e) {
+                console.error("Failed to update ticket", e);
+                alert("Internal Server Error.");
+            }
+        }
+
+        function openReplyModal(tId, sId) {
+            document.getElementById('replyTicketId').value = tId;
+            document.getElementById('replyStudentId').value = sId;
+            document.getElementById('replyNote').value = '';
+            document.getElementById('replyModal').style.display = 'flex';
+        }
+
+        function closeReplyModal() {
+            document.getElementById('replyModal').style.display = 'none';
+        }
+
+        async function submitResolution() {
+            const tId = document.getElementById('replyTicketId').value;
+            const sId = document.getElementById('replyStudentId').value;
+            const reply = document.getElementById('replyNote').value;
+
+            if (!reply.trim()) { alert("Please provide a resolution note."); return; }
+
+            try {
+                // Mock network delay replacing PATCH and POST calls
+                await new Promise(r => setTimeout(r, 400));
+
+                alert(`[Mock Feature] Ticket #TK-${tId} resolved! A notification would be sent to student ID ${sId}.`);
+
+                closeReplyModal();
+
+            } catch (e) {
+                alert("Internal Error updating ticket.");
+            }
+        }
+
+        // Initialize Everything
+        loadHODDashboard();
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load sidebar');
+                return response.text();
+            })
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                const sidebar = doc.getElementById('sidebar');
+                const overlay = doc.getElementById('sidebarOverlay');
+                const scriptContent = doc.querySelector('script').textContent;
+
+                const container = document.querySelector('.dashboard-container');
+                if (sidebar && overlay) {
+                    const existingSidebar = document.getElementById('sidebar');
+                    const existingOverlay = document.getElementById('sidebarOverlay');
+                    if (existingSidebar) existingSidebar.remove();
+                    if (existingOverlay) existingOverlay.remove();
+
+                    container.prepend(sidebar);
+                    container.prepend(overlay);
+
+                    const script = document.createElement('script');
+                    script.textContent = scriptContent;
+                    document.body.appendChild(script);
+                }
+            })
+            .catch(err => console.error('Error loading sidebar:', err));
+
+        // Fallback toggle function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+    </script>
+</body>
+
+</html>

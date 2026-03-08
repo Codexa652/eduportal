@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard | EduPortal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../commonstyle.css">
+    <link rel="stylesheet" href="../../student/css/student-dashboard.css">
+    <link rel="stylesheet" href="../../HOD/css/hod-dashboard.css">
+    <style>
+        .page-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #581c87 0%, #7B05E3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(123, 5, 227, 0.2);
+        }
+
+        .welcome-section h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+
+                <div class="top-actions">
+                    <button class="icon-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content fade-in">
+                <div class="welcome-section">
+                    <h1>Teacher Dashboard</h1>
+                    <p>Manage your classes, students, and syllabus progress.</p>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>My Subjects</h3>
+                            <p id="teacherSubjectsCount">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subjects -->
+                <h2>Classes You Teach</h2>
+                <div class="subjects-grid" id="teacherSubjectsGrid">
+                    <!-- Subjects will be populated here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check Session
+        const session = JSON.parse(localStorage.getItem('eduportal_session')) || JSON.parse(localStorage.getItem('currentUser'));
+        if (!session || session.role !== 'teacher') {
+            window.location.href = '../../login2.html';
+        }
+
+        async function loadTeacherData() {
+            try {
+                // Static Mock Data replacing db.json fetch
+                const allSubjects = [
+                    { id: 1, name: "Advanced Mathematics", code: "MAT301", teacherId: 2, credits: 4 },
+                    { id: 2, name: "Physics", code: "PHY201", teacherId: 2, credits: 3 },
+                    { id: 3, name: "Computer Science", code: "CS101", teacherId: 4, credits: 4 }
+                ];
+
+                // Filter for this teacher (Mock teacherId: 2)
+                const mySubjects = allSubjects.filter(sub => sub.teacherId === session.id || !session.id);
+
+                document.getElementById('teacherSubjectsCount').innerText = mySubjects.length;
+                const grid = document.getElementById('teacherSubjectsGrid');
+
+                mySubjects.forEach(subject => {
+                    const div = document.createElement('div');
+                    div.className = 'subject-card';
+                    div.innerHTML = `
+                        <div class="subject-header">
+                            <div class="subject-icon" style="background: #f97316;">
+                                <i class="fas fa-book" style="color: white;"></i>
+                            </div>
+                            <span>SUB${subject.id}</span>
+                        </div>
+                        <h3>${subject.name}</h3>
+                        <p style="margin-top: 10px; color: #666;">Manage this class and update syllabus.</p>
+                        <button class="btn-primary" style="background: #f97316; margin-top: 15px;">
+                            <i class="fas fa-edit"></i> Manage Class
+                        </button>
+                    `;
+                    grid.appendChild(div);
+                });
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('teacherSubjectsGrid').innerHTML = '<p style="color:red;">Failed to connect to JSON Server.</p>';
+            }
+        }
+
+        loadTeacherData();
+
+        // Load Shared Sidebar
+        fetch('../../sidebar.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load sidebar');
+                return response.text();
+            })
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+                const sidebar = doc.getElementById('sidebar');
+                const overlay = doc.getElementById('sidebarOverlay');
+                const scriptContent = doc.querySelector('script').textContent;
+
+                const container = document.querySelector('.dashboard-container');
+                if (sidebar && overlay) {
+                    container.prepend(sidebar);
+                    container.prepend(overlay);
+                    const script = document.createElement('script');
+                    script.textContent = scriptContent;
+                    document.body.appendChild(script);
+                }
+            })
+            .catch(err => console.error('Sidebar error:', err));
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+    </script>
+</body>
+
+</html>
